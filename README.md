@@ -53,13 +53,15 @@ Additional points will be granted for:
 As per the problem statement the task seems to be a batch process, as it may have to handle very large files (gigabytes). So I have priotized to control memory consumption than the execution time of the program.
 
 
-1. I have created a Spring boot application with 2 REST services.
+1. I have created a Spring boot application with 3 REST services.
     * (POST) /events/storeLogFileEvents?fileName={fileName}
         This API will read all events from the provided file, calculates duration and alert for all events, stores in db table and returns all the events. It can throw an error if 
             - the fileName provided is not a valid file
             - if one event is already processed and stored in db, and user tries to process the same event again.(Database unique constraint violation, as event id has been used for db primary key)
     * (GET) /events
         This API will return all stored events in event_details table
+	* (DELETE) /events
+		This API will delete all stored events in event_details table
 2. In order to read the file `java.util.Scanner` has been used for line-by-line reading. This will consume very less memory than loading the whole file content at once.
 2. All data from logFile will be stored in a temp db table. After the operation, temp table will be dropped. This will consume a little more time for extra db operations, but it will surely handle large files with millions of records without creating any memory issue. This temp table name should be unique to each request, so that we can drop the temp table after the operation and other concurrent requests are not affected.
 3. To maintain the uniqueness timestamp is appended to the temp table name, considering 2 requests will never come at same instant. However, in practical scenario timestamp should be replaced by requestId/orderId - which is unique to each request.
