@@ -47,6 +47,7 @@ public class EventServiceImpl implements EventService {
 
 	@Override
 	public List<EventDetails> logEventsFromFile(final String fileName) throws FileNotFoundException {
+		ExecutorService executor = null;
 		// All data from logFile will be stored in a temp db table, after the operation, temp table will be dropped
 		// This will consume more time for extra db operations, but it will surely handle large files with millions of records
 		// This temp table name should be unique to each request, so that we can drop the temp table after the operation
@@ -61,7 +62,7 @@ public class EventServiceImpl implements EventService {
 			inputStream = new FileSystemResource(fileName).getInputStream();
 			sc = new Scanner(inputStream, "UTF-8");
 			final ObjectMapper mapper = new ObjectMapper();
-			final ExecutorService executor = Executors.newFixedThreadPool(Integer.parseInt(MAX_THREAD_POOL_SIZE));
+			executor = Executors.newFixedThreadPool(Integer.parseInt(MAX_THREAD_POOL_SIZE));
 			final List<Object[]> logs = new ArrayList<>();
 			final List<Future<Integer>> futures = new ArrayList<>();
 			while (sc.hasNextLine()) {
@@ -98,6 +99,8 @@ public class EventServiceImpl implements EventService {
 		} catch (final IOException e1) {
 			throw new FileNotFoundException("File '" + fileName + "' not found!");
 		} finally {
+			if(executor != null)
+				executor.shutdown();
 			// Drop the temp table when all operations are done
 			dao.dropTable(tempTable);
 			if (sc != null)
