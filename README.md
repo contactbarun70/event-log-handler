@@ -84,6 +84,7 @@ For testing the api, we can use POSTMAN, or else we can use `curl` commands to c
 Sample file location for testing: C:\Users\barun\Documents\Study\Coding\Inputs\log.txt
 * (POST) http://localhost:8080/events/storeLogFileEvents?fileName=C:/Users/barun/Documents/Study/Coding/Inputs/log.txt
 * (GET) http://localhost:8080/events
+* (DELETE) http://localhost:8080/events
 #### Curl commands to call the API:
 * (POST) Store log files in DB
 ```
