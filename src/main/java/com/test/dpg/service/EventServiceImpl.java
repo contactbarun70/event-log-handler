@@ -12,6 +12,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,8 +47,12 @@ public class EventServiceImpl implements EventService {
 	private String MAX_THREAD_POOL_SIZE;
 
 	@Override
-	public List<EventDetails> logEventsFromFile(final String fileName) throws FileNotFoundException {
+	public List<EventDetails> logEventsFromFile(String fileName) throws FileNotFoundException {
+		if(StringUtils.isBlank(fileName)) {
+			throw new FileNotFoundException("Please provide valid file name.");
+		}
 		ExecutorService executor = null;
+		fileName = fileName.replaceAll("\\\\", "/");
 		// All data from logFile will be stored in a temp db table, after the operation, temp table will be dropped
 		// This will consume more time for extra db operations, but it will surely handle large files with millions of records
 		// This temp table name should be unique to each request, so that we can drop the temp table after the operation
